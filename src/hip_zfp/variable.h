@@ -249,7 +249,8 @@ namespace hipZFP
         // The extra 2 elements of dynamic shared memory are needed to handle unaligned output data
         // and potential zero-padding to the next multiple of 64 bits.
         // Block sizes set so that the shared memory stays < 48KB.
-        int max_blocks = 0;
+        printf("launching kernel with Cooperative Groups\n");
+	int max_blocks = 0;
         if (nbitsmax <= 352)
         {
             constexpr int tile_size = 1;
@@ -271,7 +272,7 @@ namespace hipZFP
             hipOccupancyMaxActiveBlocksPerMultiprocessor(&max_blocks,
                                                           concat_bitstreams_chunk<tile_size, num_tiles>,
                                                           tile_size * num_tiles, shmem);
-            max_blocks *= num_sm;
+	    max_blocks *= num_sm;
             dim3 threads(tile_size, num_tiles, 1);
             hipLaunchCooperativeKernel((void *)concat_bitstreams_chunk<tile_size, num_tiles>,
                                         dim3(max_blocks, 1, 1), threads, kernelArgs, shmem, 0);
@@ -302,6 +303,7 @@ namespace hipZFP
             hipLaunchCooperativeKernel((void *)concat_bitstreams_chunk<tile_size, num_tiles>,
                                         dim3(max_blocks, 1, 1), threads, kernelArgs, shmem, 0);
         }
+	printf("finish launching the kernel with Cooperative Groups\n");
     }
 
     // *******************************************************************************

@@ -584,7 +584,9 @@ hip_compress(zfp_stream *stream, const zfp_field *field, int variable_rate)
       hipZFP::chunk_process_launch((uint*)d_stream, d_offsets, i, hipr_blocks, last_chunk, buffer_maxbits, num_sm);
     }
     // The total length in bits is now in the base of the prefix sum.
+    printf("calling hipMemcpy\n");
     hipMemcpy (&stream_bytes, d_offsets, sizeof (unsigned long long), hipMemcpyDeviceToHost);
+    printf("finish hipMemcpy\n");
     stream_bytes = (stream_bytes + 7) / 8;
   }
 
